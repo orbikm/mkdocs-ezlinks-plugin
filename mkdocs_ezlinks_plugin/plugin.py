@@ -145,8 +145,11 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
     # Build a map of filenames for easier lookup at build time
     def on_files(self, files: list[mkdocs.structure.files.File], config):
         self.filenames = {}
-
         for file in files:
+            # Ignore any files generated from files outside of the docs root,
+            # which include theme files.
+            if config['docs_dir'] not in file.abs_src_path:
+                continue
             fmt_names = EzLinksReplacer.search_names(file.src_path)
             for fmt_name in fmt_names:
                 if not self.filenames.get(fmt_name):
