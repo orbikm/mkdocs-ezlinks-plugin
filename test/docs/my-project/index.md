@@ -5,19 +5,20 @@
 
 [working link no ext](project.md)
 
-![test](puffin.png)
-![test](puffin.jpg)
+![test](puppy.png)
+![test](puppy.jpg)
 
-![](puffin.png)
-![](puffin)
-![](puffin.jpg)
+![](puppy.png)
+![](puppy)
+![](puppy.jpg)
 
 [[Roam Link]]
 
 [[Project]]
 
-
-[[Project#My Project|the-proj]]
+[[Project#My Project|This is my totally kewl project!]]
 
 [Abs Link (no Ext)](/other-project/project)
 [Abs Link](/other-project/project.md)
+
+[[Index]]

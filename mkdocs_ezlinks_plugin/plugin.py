@@ -3,24 +3,6 @@ import os
 import mkdocs
 from dataclasses import dataclass
 
-# For Regex, match groups are:
-#       0: Whole markdown link e.g. [Alt-text](url)
-#       1: Alt text
-#       2: Full URL e.g. url + hash anchor
-#       3: Filename e.g. filename.md
-#       4: File extension e.g. .md, .png, etc.
-#       5. hash anchor e.g. #my-sub-heading-link
-
-# For Regex, match groups are:
-#       0: Whole roamlike link e.g. [[filename#title|alias]]
-#       1: Whole roamlike link e.g. filename#title|alias
-#       2: filename
-#       3: #title
-#       4: |alias
-# roamlink_pattern = re.compile(
-#     r'\[\[(?P<test>([^\]#\|]*)(#[^\|\]]+)*(\|[^\]]*)*)\]\]'
-# 
-
 class BrokenLink(Exception):
     pass
 
@@ -37,9 +19,7 @@ class EzLinksOptions:
     ''' Dataclass to hold typed options from the configuration. '''
     strict: bool
     absolute: bool
-    roamlinks: bool
-    metalinks: bool
-    extensions: list[str]
+    wikilinks: bool
 
 class EzLinksReplacer:
     def __init__(self, options: EzLinksOptions, filenames: list[str], root: str, page_url: str):
@@ -53,10 +33,10 @@ class EzLinksReplacer:
         try:
             # TODO: Extract the explicit check here, with more of a Chain of Responsibility pattern of
             #       link type classifier (e.g. if self.get_link_type(groups) == LinkType.Roam: ...)
-            if groups['target']:
-                link = self._get_md_link(match)            
-            elif groups['roam_filename']:
-                link = self._get_roam_link(match)
+            if groups['md_target']:
+                link = self._get_md_link(match)
+            elif groups['wiki_link']:
+                link = self._get_wiki_link(match)
             else:
               return match.group(0)
 
@@ -73,54 +53,79 @@ class EzLinksReplacer:
     def _is_absolute_link(self, link):
         return link and link.startswith('/')
 
-    def _get_md_link(self, match: re.Match) -> Link:
-        groups = match.groupdict()
-        search_name = EzLinksReplacer.search_name(groups['filename'])
-
-        # Find the absolute path of the current page (Generate relative path, from here)
+    # Attempts to convert a filename to a relative path to the specified file.
+    # It uses the prebuilt map of filename -> list of file paths to speed the search
+    # If the link is absolute, it appends the path to the root, enabling absolute links.
+    # If the link is a filename, it will perform the search.
+    def _get_link_to_file(self, filename: str) -> str:
+        search_name = EzLinksReplacer.search_name(filename)
         abs_from = os.path.dirname(os.path.join(self.root, self.page_url))
-
-        # Use simple strategy for absolute links
-        if self._is_absolute_link(groups['filename']):
+        if filename.startswith('/'):
+            abs_to = os.path.join(self.root, filename[1:])
             if not self.options.absolute:
-                print(f"WARNING -  Absolute link '{match.group(0)}' detected, but absolute link support disabled.")
+                print(f"WARNING -  Absolute link '{filename}' detected, but absolute link support disabled.")
                 # Return the whole string, unaltered
-                return None
-
-            target = groups['filename']
-            target = target + '.md' if '.' not in target else target
-            abs_to = os.path.join(self.root, target[1:])
-            
-            final_link = os.path.relpath(abs_to, abs_from)              
-        # Lookup the target document in the filename cache
-        elif files := self.filenames.get(search_name):
-            # Find the absolute path to the first instance of the filename
+                return filename
+        else:
+            files = self.filenames.get(search_name)
+            if not files:
+                raise BrokenLink(f"Unable to find filename '{search_name}', from link {filename}")
             abs_to = os.path.join(self.root, files[0])
-            final_link = os.path.relpath(abs_to, abs_from)
-
             if len(files) > 1:
-                print(f"WARNING: Multiple files with filename '{groups['filename']}'")
+                print(f"WARNING -  Link targeting a duplicate filename '{filename}'.")
                 for idx,file in enumerate(files):
                     active = "<-- Active" if idx == 0 else ""
-                    print(f"   [{idx}] - {file} {active}")         
-        else:
-            raise BrokenLink(f"File name '{search_name}' not found in project files.")
+                    print(f"   [{idx}] - {file} {active}")
+        abs_to = abs_to + '.md' if '.' not in abs_to else abs_to
+        return os.path.relpath(abs_to, abs_from)
 
-        return Link(
-          image=groups.get('is_image') or groups.get('alt_is_image'),
-          text='' if not groups.get('text') else groups.get('text'),
-          target=final_link,
-          anchor='' if not groups.get('anchor') else groups.get('anchor'))
-
-    def _get_roam_link(self, match: re.Match) -> Link:
+    # Generate a Link with the details supplied by an md link
+    def _get_md_link(self, match: re.Match) -> Link:
         groups = match.groupdict()
+        target = self._get_link_to_file(groups.get('md_filename'))
+        return Link(
+            image=groups.get('md_is_image') or groups.get('md_alt_is_image'),
+            text=groups.get('md_text', ''),
+            target=target,
+            anchor=groups.get('md_anchor', '')
+        )
+
+    # Generate a Link with the details supplied by a wikilink
+    def _get_wiki_link(self, match: re.Match) -> Link:
+        full_link = match.group(0)
+        groups = match.groupdict()
+
+        wiki_link = groups.get('wiki_link')
+        if wiki_link in ['', None]:
+            raise BrokenLink(f"Broken wikilink detected. '{full_link}', could not extract link.")
+
+        # Slugify the link
+        link = self._slugify(wiki_link)
+        link = self._get_link_to_file(link)
+
+        # Slugify the anchor, if it exists
+        anchor = groups.get('wiki_anchor')
+        if anchor not in ['', None]:
+            anchor = self._slugify(anchor)
+
+        wiki_text = groups.get('wiki_text')
         return Link(
             image=False,
-            text=groups['roam_filename'],
-            target=groups['roam_filename'],
-            anchor=''
+            text=wiki_text if wiki_text and wiki_text != '' else wiki_link,
+            target=link,
+            anchor=anchor
         )
-        
+
+    def _slugify(self, link: str) -> str:
+        # Convert to lowercase
+        slug = link.lower()
+        # Convert all spaces to '-'
+        slug = re.sub('\ ', '-', slug)
+        # Convert all unsupported characters to ''
+        slug = re.sub('[^\w\u4e00-\u9fff\- ]', '', slug)
+        return slug
+
+
     @staticmethod
     def search_name(path: str) -> str:
         # Strip the directory from the filename
@@ -133,13 +138,11 @@ class EzLinksReplacer:
         # strip it
         return name if extension and extension == '.md' else filename
 
-        
+
 class EzLinksPlugin(mkdocs.plugins.BasePlugin):
     config_scheme = (
-        ('absolute', mkdocs.config.config_options.Type(bool, default=True)),
-        ('roamlinks',  mkdocs.config.config_options.Type(bool, default=True)),
-        ('metalinks',  mkdocs.config.config_options.Type(bool, default=True)),
-        ('extensions', mkdocs.config.config_options.Type(list, default=['png', 'jpg', 'gif', 'bmp', 'jpeg']))
+        ('absolute',   mkdocs.config.config_options.Type(bool, default=True)),
+        ('wikilinks',  mkdocs.config.config_options.Type(bool, default=True)),
     )
 
     # Build a map of filenames for easier lookup at build time
@@ -158,68 +161,64 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
     def on_page_markdown(self, markdown, page, config, site_navigation=None, **kwargs):
         root = config["docs_dir"]
 
-        # First conditional, checks explicitly for an empty image text, which is
-        # allowed, but not an empty text regular link.
-        #
-        #  Check for Empty Image Text (Allowed)
-        #    ![]     --   match   --+->  (?P<is_image>\!?)\[\]
-        #    ![Text] -- no match --/
-        #
-        #  Check for Text of the link, between square brackets, 
-        #  at least one of any character.
-        #
-        #    [The Text [of] the Link]  --   match   --+->  (?P<text>.+)
-        #    ![Text]
-        #    []        ----------------  no match  --/
-        #
-        #   Check for the Target, Filename, and Anchor (TODO: Link Titles),
-        #   between parentheses, all characters except ' ' or '#'.
-        #       Capture: target - The full link target, including file name and anchor
-        #       Capture: filename - The name of the target file, any characters except
-        #
-        #       Capture: anchor - After a '#', any characters except ' ' or ')'
-        #       TODO: Capture: title - Any character except '"' between quotations found
-        #                              after a 
-        #  ()
+        # +------------------------------+
+        # | MD Link Regex Capture Groups |
+        # +---------------------------------------------------------------------------------------+
+        # | md_is_image      |  Contains ! when an image tag, or empty if not (check both)        |
+        # | md_alt_is_image  |  Contains ! when an image tag, or empty if not (check both)        |
+        # | md_text          |  Contains the Link Text between [md_text]                          |
+        # | md_target        |  Contains the full target of the Link (filename.md#anchor)         |
+        # | md_filename      |  Contains just the filename portion of the target (filename.md)    |
+        # | md_anchor        |  Contains the anchor, if present (e.g. file.md#anchor -> 'anchor') |
+        # +----------------------------------------------------------------------------------------
         # TODO: Support - [Alt Text](my-page.md "My Title") (Link titles)
         md_link_pattern =\
-            r'(?:'                                  \
-              r'(?P<is_image>\!?)\[\]'              \
-              r'|'                                  \
-              r'(?P<alt_is_image>\!?)'              \
-              r'\['                                 \
-                  r'(?P<text>.+)'                   \
-              r'\]'                                 \
-            r')'                                    \
-            r'\('                                   \
-              r'(?P<target>'                        \
-                r'(?P<filename>\/?[^#\ \)]+)'       \
-                    r'(?:#(?P<anchor>[^ \)]+?)?)?'  \
-              r')'                                  \
+            r'(?:'                                        \
+                r'(?P<md_is_image>\!?)\[\]'               \
+                r'|'                                      \
+                r'(?P<md_alt_is_image>\!?)'               \
+                r'\['                                     \
+                    r'(?P<md_text>.+)'                    \
+                r'\]'                                     \
+            r')'                                          \
+            r'\('                                         \
+                r'(?P<md_target>'                         \
+                    r'(?P<md_filename>\/?[^#\ \)]+)'      \
+                        r'(?:#(?P<md_anchor>[^\ \)]*)?)?' \
+                r')'                                      \
             r'\)'
 
-        #    r'\[\[(?P<roam_filename>([^\]#\|]*)#(?P<title>[^\|\]]+)*(?P<alias>\|[^\]]*)*)\]\]' if self.config['roamlinks'] else ""      # Roam Links 
-        roam_link_pattern =\
-            r'\['                                   \
-              r'\['                                 \
-                r'(?P<roam_filename>([^\]#\|]*)'    \
-                  r'#(?P<title>[^\|\]]+)*'          \
-                  r'(?P<alias>\|[^\]]*)*)'          \
-              r'\]'                                 \
-            r'\]' if self.config['roamlinks'] else ""
-        
-        if self.config['roamlinks']:
-          print("WARNING  - roamlinks support enabled, but not currently supported. This message is harmless.")
+        # +--------------------------------+
+        # | Wiki Link Regex Capture Groups |
+        # +------------------------------------------------------------------------------------+
+        # | wiki_is_image |  Contains ! when an image tag, or empty if not                     |
+        # | wiki_link     |  Contains the Link Text between [[ wiki_link ]]                    |
+        # | wiki_anchor   |  Contains the anchor, if present (e.g. file.md#anchor -> 'anchor') |
+        # | wiki_text     |  Contains the text of the link.                                    |
+        # +------------------------------------------------------------------------------------+
+        wiki_link_pattern =\
+            r'(?P<wiki_is_image>[\!]?)'             \
+            r'\[\['                                 \
+                r'(?P<wiki_link>[^#\|\]]+)'         \
+                r'(?:#(?P<wiki_anchor>[^\|\]]+)?)?' \
+                r'(?:\|(?P<wiki_text>[^\]]+)?)?'   \
+            r'\]\]'
 
-        patterns = [md_link_pattern, roam_link_pattern]
+        patterns = [md_link_pattern]
 
-        # Multi-Pattern search pattern, to capture all link types at once
+        if self.config['wikilinks']:
+          patterns.append(wiki_link_pattern)
+
+        # Multi-Pattern search pattern, to capture  all link types at once
         uber_pattern = f"(?:{'|'.join(patterns)})"
-        
+
         options = EzLinksOptions(**self.config, strict=config['strict'])
-        markdown = re.sub(uber_pattern, EzLinksReplacer(
-                                            options,
-                                            self.filenames,
-                                            root,
-                                            page.file.src_path), markdown)
+        markdown = re.sub(
+            uber_pattern,
+            EzLinksReplacer(
+                options,
+                self.filenames,
+                root,
+                page.file.src_path),
+            markdown)
         return markdown
