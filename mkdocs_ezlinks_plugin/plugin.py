@@ -118,6 +118,7 @@ class EzLinksReplacer:
         )
         return result
 
+    # Reference: https://gist.github.com/asabaylus/3071099
     def _slugify(self, link: str) -> str:
         # Convert to lowercase
         slug = link.lower()
