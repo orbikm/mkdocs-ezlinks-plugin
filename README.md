@@ -4,8 +4,8 @@ Plugin for mkdocs which enables easier linking between pages.
 This plugin was written in order to provide an up-to-date and
 feature complete plugin for easily referencing documents
 with a variety of features:
-* File name linking (e.g. [Text](file))
-* Absolute paths (e.g. `[Text](/link/to/file.md))
+* File name linking (e.g. `[Text](file)`)
+* Absolute paths (e.g. `[Text](/link/to/file.md)`)
 * WikiLinks support (e.g. `[[Link]]`)
 
 # Install
@@ -19,17 +19,24 @@ plugins:
   - search
   - ezlinks
 ```
+> **NOTE**  
+>   If you have no plugins entry in your config file yet, you'll likely also want to add the search plugin. MkDocs enables it by default if there is no plugins entry set, but now you have to enable it explicitly.
 
-**NOTE**: If you have no plugins entry in your config file yet, you'll likely also want to add the search plugin. MkDocs enables it by default if there is no plugins entry set, but now you have to enable it explicitly.
-
-## Configuration Options
+# Configuration Options
 ```
 plugins:
     - search
     - ezlinks:
-        - wikilinks: {TRUE|false}
-        - absolute: {TRUE|false}
+        - wikilinks: {true|false}
+        - absolute: {true|false}
 ```
+## wikilinks
+Determines whether to scan for wikilinks or not (See [WikiLink Support](#wikilink-support)).
+
+## absolute
+Determines whether to translate absolute liks to relative links (see [Absolute Links](#absolute-links)).
+> **NOTE**  
+>  This plugin does not function well when the 'wikilinks' markdown extension is enabled. 
 
 # Features
 ## Filename Links
@@ -82,10 +89,9 @@ and these links are entered in `folder1/main.md`, this is how wikilinks will be 
 |Link|Translation|
 |----|-----------|
 |`[[Page Name]]`|`[Page Name](../folder2/page-name.md)`|
-|`![[Puppy]]`|`![Puppy](../images/puppy.png)`|
-|`[[Page Name#Section Heading]]`|`[Page Name](../relative/path/to/page-name.md#section-heading)`|
-|`[[Page Name|Link Text]]`|`[Link Text](../folder2/page-name.md)`|
-|`[[Page Name#Section Heading|Link Text]]`|`[Link Text](../folder2/page-name.md#section-heading)`|
+|`![[Puppy]]`|`![Puppy](../images/puppy.png)`|`[[Page Name#Section Heading]]`|`[Page Name](../relative/path/to/page-name.md#section-heading)`|
+|`[[Page Name\|Link Text]]`|`[Link Text](../folder2/page-name.md)`|
+|`[[Page Name#Section Heading\|Link Text]]`|`[Link Text](../folder2/page-name.md#section-heading)`|
 
 
 # Attribution
