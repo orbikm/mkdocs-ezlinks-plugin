@@ -2,11 +2,13 @@
 Plugin for mkdocs which enables easier linking between pages.
 
 This plugin was written in order to provide an up-to-date and
-feature complete functionality for easily referencing documents
-through a variety of techniques:
+feature complete plugin for easily referencing documents
+with a variety of features:
+* File name linking (e.g. [Text](file))
+* Absolute paths (e.g. `[Text](/link/to/file.md))
+* WikiLinks support (e.g. `[[Link]]`)
 
 # Install
-
 ```
 pip install mkdocs-ezlinks-plugin
 ```
@@ -18,17 +20,15 @@ plugins:
   - ezlinks
 ```
 
-**NOTE**: If you have no plugins entry in your config file yet, you'll likely also want to add the search plugin. MkDocs enables it by default if there is no plugins entry set, but now you have to enable it explicitly. 
+**NOTE**: If you have no plugins entry in your config file yet, you'll likely also want to add the search plugin. MkDocs enables it by default if there is no plugins entry set, but now you have to enable it explicitly.
 
 ## Configuration Options
 ```
 plugins:
     - search
     - ezlinks:
-        - roamlinks: {TRUE|false}
+        - wikilinks: {TRUE|false}
         - absolute: {TRUE|false}
-        - metalinks: {TRUE|false}
-        - extensions: ['jpg', 'png', ...]
 ```
 
 # Features
@@ -37,7 +37,8 @@ Given a layout such as
 ```
 - index.md
 - folder/
-+-- filename.md
+  +-- filename.md
+  +-- image.png
 ```
 The following links will result in the following translations
 |Link|Translation|
@@ -46,16 +47,18 @@ The following links will result in the following translations
 |`[Link Text](filename#Anchor)`|`[Link Text](folder/filename.md#Anchor)`|
 |`[Link Text](filename.md)`|`[Link Text](folder/filename.md)`|
 |`[Link Text](filename.md#Anchor)`|`[Link Text](folder/filename.md#Anchor)`|
+|`![Image Alt Text](image)`|`![Image Alt Text](folder/image.png)`|
+|`![Image Alt Text](image.png)`|`![Image Alt Text](folder/image.png)`|
 
 
 ## Absolute Links
 Given a layout such as
 ```
-- index.md
 - static/
-+-- image.png
+  +-- image.png
 - folder/
-+-- document.md
+  +-- document.md
+- index.md
 ```
 Given that we are entering the links into the `folder/document.md` file,
 |Link|Translation|
@@ -65,12 +68,31 @@ Given that we are entering the links into the `folder/document.md` file,
 This behavior can be disabled by setting the `absolute` property to `false` in the mkdocs configuration file.
 
 # WikiLink Support
+Given a layout such as
+```
+- folder1/
+  +-- main.md
+- folder2/
+  +-- page-name.md
+- images/
+  +-- puppy.png
+```
+and these links are entered in `folder1/main.md`, this is how wikilinks will be translated
+
+|Link|Translation|
+|----|-----------|
+|`[[Page Name]]`|`[Page Name](../folder2/page-name.md)`|
+|`![[Puppy]]`|`![Puppy](../images/puppy.png)`|
+|`[[Page Name#Section Heading]]`|`[Page Name](../relative/path/to/page-name.md#section-heading)`|
+|`[[Page Name|Link Text]]`|`[Link Text](../folder2/page-name.md)`|
+|`[[Page Name#Section Heading|Link Text]]`|`[Link Text](../folder2/page-name.md#section-heading)`|
 
 
 # Attribution
-This work is highly inspired and derived from the following excellent plugins:
+This work is highly inspired from the following plugins:
   - [mkdocs-autolinks-plugin](https://github.com/midnightprioriem/mkdocs-autolinks-plugin/)
   - [mkdocs-roamlinks-plugin](https://github.com/Jackiexiao/mkdocs-roamlinks-plugin)
   - [mkdocs-abs-rel-plugin](https://github.com/sander76/mkdocs-abs-rel-plugin)
 
-  I have combined some the features of these plugins, fixed several existing bugs, and am attempting to provide a cohesive, up-to-date, and maintained solution for the mkdocs community.
+  I have combined some the features of these plugins, fixed several existing bugs, and am adding features in order to
+  provide a cohesive, up-to-date, and maintained solution for the mkdocs community.
