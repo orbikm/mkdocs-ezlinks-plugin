@@ -64,8 +64,8 @@ Given that we are entering the links into the `folder/document.md` file,
 
 This behavior can be disabled by setting the `absolute` property to `false` in the mkdocs configuration file.
 
-# Roam Link Support
-Coming soon! (Links will scan, but will not be translated as of yet. Stay tuned!)
+# WikiLink Support
+
 
 # Attribution
 This work is highly inspired and derived from the following excellent plugins:

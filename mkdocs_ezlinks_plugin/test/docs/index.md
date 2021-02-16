@@ -1,1 +1,3 @@
 Welcome, world!
+
+![[Puppy]]

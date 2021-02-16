@@ -31,8 +31,6 @@ class EzLinksReplacer:
     def __call__(self, match: re.Match) -> str:
         groups = match.groupdict()
         try:
-            # TODO: Extract the explicit check here, with more of a Chain of Responsibility pattern of
-            #       link type classifier (e.g. if self.get_link_type(groups) == LinkType.Roam: ...)
             if groups['md_target']:
                 link = self._get_md_link(match)
             elif groups['wiki_link']:
@@ -58,26 +56,28 @@ class EzLinksReplacer:
     # If the link is absolute, it appends the path to the root, enabling absolute links.
     # If the link is a filename, it will perform the search.
     def _get_link_to_file(self, filename: str) -> str:
-        search_name = EzLinksReplacer.search_name(filename)
-        abs_from = os.path.dirname(os.path.join(self.root, self.page_url))
-        if filename.startswith('/'):
-            abs_to = os.path.join(self.root, filename[1:])
-            if not self.options.absolute:
-                print(f"WARNING -  Absolute link '{filename}' detected, but absolute link support disabled.")
-                # Return the whole string, unaltered
-                return filename
-        else:
-            files = self.filenames.get(search_name)
-            if not files:
-                raise BrokenLink(f"Unable to find filename '{search_name}', from link {filename}")
-            abs_to = os.path.join(self.root, files[0])
-            if len(files) > 1:
-                print(f"WARNING -  Link targeting a duplicate filename '{filename}'.")
-                for idx,file in enumerate(files):
-                    active = "<-- Active" if idx == 0 else ""
-                    print(f"   [{idx}] - {file} {active}")
-        abs_to = abs_to + '.md' if '.' not in abs_to else abs_to
-        return os.path.relpath(abs_to, abs_from)
+        search_names = EzLinksReplacer.search_names(filename)
+        # Always searches for full filename with the extension first
+        for search_name in search_names:
+            abs_from = os.path.dirname(os.path.join(self.root, self.page_url))
+            if filename.startswith('/'):
+                abs_to = os.path.join(self.root, filename[1:])
+                if not self.options.absolute:
+                    print(f"WARNING -  Absolute link '{filename}' detected, but absolute link support disabled.")
+                    # Return the whole string, unaltered
+                    return filename
+            else:
+                files = self.filenames.get(search_name)
+                if not files:
+                    raise BrokenLink(f"Unable to find filename '{search_name}', from link {filename}")
+                abs_to = os.path.join(self.root, files[0])
+                if len(files) > 1:
+                    print(f"WARNING -  Link targeting a duplicate filename '{filename}'.")
+                    for idx,file in enumerate(files):
+                        active = "<-- Active" if idx == 0 else ""
+                        print(f"   [{idx}] - {file} {active}")
+            abs_to = abs_to + '.md' if '.' not in abs_to else abs_to
+            return os.path.relpath(abs_to, abs_from)
 
     # Generate a Link with the details supplied by an md link
     def _get_md_link(self, match: re.Match) -> Link:
@@ -101,6 +101,7 @@ class EzLinksReplacer:
 
         # Slugify the link
         link = self._slugify(wiki_link)
+        # Search the cache for the linked file
         link = self._get_link_to_file(link)
 
         # Slugify the anchor, if it exists
@@ -109,12 +110,13 @@ class EzLinksReplacer:
             anchor = self._slugify(anchor)
 
         wiki_text = groups.get('wiki_text')
-        return Link(
-            image=False,
+        result = Link(
+            image=groups.get('wiki_is_image'),
             text=wiki_text if wiki_text and wiki_text != '' else wiki_link,
             target=link,
             anchor=anchor
         )
+        return result
 
     def _slugify(self, link: str) -> str:
         # Convert to lowercase
@@ -127,16 +129,11 @@ class EzLinksReplacer:
 
 
     @staticmethod
-    def search_name(path: str) -> str:
-        # Strip the directory from the filename
+    def search_names(path: str) -> str:
         filename = os.path.basename(path)
-
-        # If we assume_md, strip the extensions off of any md we find
         name, extension = os.path.splitext(filename)
-        # If there is no .md, or if there is an extension and it _is_ .md,
-
-        # strip it
-        return name if extension and extension == '.md' else filename
+        # remove any extensions
+        return (filename, name)
 
 
 class EzLinksPlugin(mkdocs.plugins.BasePlugin):
@@ -150,13 +147,14 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
         self.filenames = {}
 
         for file in files:
-            fmt_name = EzLinksReplacer.search_name(file.src_path)
-            if not self.filenames.get(fmt_name):
-                self.filenames[fmt_name] = []
-            else:
-                print(f"WARNING -  Duplicate filename `{fmt_name}` detected. Linking to them will match the first (alphabetically ordered) file.")
-                print("            You can use `metalinks` to link to these files without renaming, if they're enabled.")
-            self.filenames[fmt_name].append(file.src_path)
+            fmt_names = EzLinksReplacer.search_names(file.src_path)
+            for fmt_name in fmt_names:
+                if not self.filenames.get(fmt_name):
+                    self.filenames[fmt_name] = []
+                else:
+                    print(f"WARNING -  Duplicate filename `{fmt_name}` detected. Linking to them will match the first (alphabetically ordered) file.")
+                    print("            You can use `metalinks` to link to these files without renaming, if they're enabled.")
+                self.filenames[fmt_name].append(file.src_path)
 
     def on_page_markdown(self, markdown, page, config, site_navigation=None, **kwargs):
         root = config["docs_dir"]
