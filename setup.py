@@ -1,12 +1,20 @@
 from setuptools import setup, find_packages
 
+description = 'A mkdocs plugin that makes linking to other documents easy.'
+long_description = description
+
+with open("README.md", 'r') as f:
+  long_description = f.read()
+
 setup(
   name='mkdocs-ezlinks-plugin',
-  version='0.1.0',
-  description='A mkdocs plugin that makes linking to other documents EZ.',
+  version='0.1.2',
+  description=description,
+  long_description=long_description,
+  long_description_content_type='text/markdown',
   keywords='mkdocs',
   url='https://github.com/orbikm/mkdocs-ezlinks-plugin',
-  download_url='https://github.com/orbikm/mkdocs-ezlinks-plugin/archive/v_010.tar.gz',
+  download_url='https://github.com/orbikm/mkdocs-ezlinks-plugin/archive/v_0.1.2.tar.gz',
   author='Mick Orbik',
   author_email='mick.orbik@gmail.com',
   license='MIT',
