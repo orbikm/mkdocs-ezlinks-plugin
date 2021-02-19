@@ -32,11 +32,11 @@ plugins:
 ```
 ## wikilinks
 Determines whether to scan for wikilinks or not (See [WikiLink Support](#wikilink-support)).
+> **NOTE**  
+>  This plugin feature does not function well when the 'wikilinks' markdown extension is enabled. This plugin's functionality should replace the need for enabling said extension.
 
 ## absolute
 Determines whether to translate absolute liks to relative links (see [Absolute Links](#absolute-links)).
-> **NOTE**  
->  This plugin does not function well when the 'wikilinks' markdown extension is enabled. 
 
 # Features
 ## Filename Links
@@ -48,16 +48,17 @@ Given a layout such as
   +-- image.png
 ```
 
-The following links will result in the following translations
+The following links will result in the following translations,
+
 |Link|Translation|
 |----|-----------|
-|`[Link Text](filename)`|`[Link Text](folder/filename.md)`|
-|`[Link Text](filename#Anchor)`|`[Link Text](folder/filename.md#Anchor)`|
-|`[Link Text](filename.md)`|`[Link Text](folder/filename.md)`|
-|`[Link Text](filename.md#Anchor)`|`[Link Text](folder/filename.md#Anchor)`|
-|`![Image Alt Text](image)`|`![Image Alt Text](folder/image.png)`|
-|`![Image Alt Text](image.png)`|`![Image Alt Text](folder/image.png)`|
-|`![Image Alt Test](image "Image Title")|`![Image Alt Text](folder/image.png "Image Title")`|
+| `[Link Text](filename)` | `[Link Text](folder/filename.md)`|
+| `[Link Text](filename#Anchor)` | `[Link Text](folder/filename.md#Anchor)`|
+| `[Link Text](filename.md)` | `[Link Text](folder/filename.md)`|
+| `[Link Text](filename.md#Anchor)` | `[Link Text](folder/filename.md#Anchor)` |
+| `![Image Alt Text](image)` | `![Image Alt Text](folder/image.png)` |
+| `![Image Alt Text](image.png)` | `![Image Alt Text](folder/image.png)` |
+| `![Image Alt Test](image "Image Title")` | `![Image Alt Text](folder/image.png "Image Title")` |
 
 
 ## Absolute Links
@@ -70,9 +71,10 @@ Given a layout such as
 - index.md
 ```
 Given that we are entering the links into the `folder/document.md` file,
+
 |Link|Translation|
 |----|-----------|
-|`![Link Text](/static/image.png)`|`![Link Text](../static/image.png)`|
+| `![Link Text](/static/image.png)` | `![Link Text](../static/image.png)` |
 
 This behavior can be disabled by setting the `absolute` property to `false` in the mkdocs configuration file.
 
@@ -90,10 +92,10 @@ and these links are entered in `folder1/main.md`, this is how wikilinks will be 
 
 |Link|Translation|
 |----|-----------|
-|`[[Page Name]]`|`[Page Name](../folder2/page-name.md)`|
-|`![[Puppy]]`|`![Puppy](../images/puppy.png)`|`[[Page Name#Section Heading]]`|`[Page Name](../relative/path/to/page-name.md#section-heading)`|
-|`[[Page Name\|Link Text]]`|`[Link Text](../folder2/page-name.md)`|
-|`[[Page Name#Section Heading\|Link Text]]`|`[Link Text](../folder2/page-name.md#section-heading)`|
+| `[[Page Name]]` | `[Page Name](../folder2/page-name.md)` |
+| `![[Puppy]]` | `![Puppy](../images/puppy.png)` | `[[Page Name#Section Heading]]` | `[Page Name](../relative/path/to/page-name.md#section-heading)` |
+| `[[Page Name\|Link Text]]` | `[Link Text](../folder2/page-name.md)` |
+| `[[Page Name#Section Heading\|Link Text]]` | `[Link Text](../folder2/page-name.md#section-heading)` |
 
 
 # Attribution
