@@ -32,11 +32,11 @@ plugins:
 ```
 ## wikilinks
 Determines whether to scan for wikilinks or not (See [WikiLink Support](#wikilink-support)).
+> **NOTE**  
+>  This plugin feature does not function well when the 'wikilinks' markdown extension is enabled. This plugin's functionality should replace the need for enabling said extension.
 
 ## absolute
 Determines whether to translate absolute liks to relative links (see [Absolute Links](#absolute-links)).
-> **NOTE**  
->  This plugin does not function well when the 'wikilinks' markdown extension is enabled. 
 
 # Features
 ## Filename Links
