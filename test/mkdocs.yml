@@ -3,6 +3,7 @@ strict: false
 nav:
     - Home: 'index.md'
     - My Project: 'my-project/index.md'
+    - 'my-project/link_updates.md'
     - 'my-project/section/my-section.md'
     - 'other-project/project.md'
 theme: readthedocs

@@ -4,9 +4,9 @@ Plugin for mkdocs which enables easier linking between pages.
 This plugin was written in order to provide an up-to-date and
 feature complete plugin for easily referencing documents
 with a variety of features:
-* File name linking (e.g. `[Text](file)`)
+* File name linking (e.g. `[Text](file#anchor "title")`)
 * Absolute paths (e.g. `[Text](/link/to/file.md)`)
-* WikiLinks support (e.g. `[[Link]]`)
+* WikiLinks support (e.g. `[[Link#anchor|Link Title]]`)
 
 # Install
 ```
@@ -47,6 +47,7 @@ Given a layout such as
   +-- filename.md
   +-- image.png
 ```
+
 The following links will result in the following translations
 |Link|Translation|
 |----|-----------|
@@ -56,6 +57,7 @@ The following links will result in the following translations
 |`[Link Text](filename.md#Anchor)`|`[Link Text](folder/filename.md#Anchor)`|
 |`![Image Alt Text](image)`|`![Image Alt Text](folder/image.png)`|
 |`![Image Alt Text](image.png)`|`![Image Alt Text](folder/image.png)`|
+|`![Image Alt Test](image "Image Title")|`![Image Alt Text](folder/image.png "Image Title")`|
 
 
 ## Absolute Links

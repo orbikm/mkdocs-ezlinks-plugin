@@ -29,7 +29,7 @@ setup(
     'Programming Language :: Python',
     'Programming Language :: Python :: 3 :: Only'
   ],
-  packages=find_packages(exclude=['*.test']),
+  packages=find_packages(exclude=['test.*']),
   entry_points={
     'mkdocs.plugins': [
       'ezlinks = mkdocs_ezlinks_plugin.plugin:EzLinksPlugin'

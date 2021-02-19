@@ -13,6 +13,7 @@ class Link:
     text: str
     target: str
     anchor: str
+    title: str
 
 @dataclass
 class EzLinksOptions:
@@ -39,8 +40,11 @@ class EzLinksReplacer:
               return match.group(0)
 
             # Render the link
-            rendered_link = f"{'!' if link.image else ''}[{link.text}]({link.target}{'#' + link.anchor if link.anchor else ''})"
-            return rendered_link
+            img = '!' if link.image else ''
+            anchor = f"#{link.anchor}" if link.anchor else ''
+            title = f' "{link.title}"' if link.title else ''
+
+            return f"{img}[{link.text}]({link.target}{anchor}{title})"
         except BrokenLink as ex:
             if self.options.strict:
                 print(f"ERROR -  {ex}")
@@ -64,7 +68,6 @@ class EzLinksReplacer:
                 abs_to = os.path.join(self.root, filename[1:])
                 if not self.options.absolute:
                     print(f"WARNING -  Absolute link '{filename}' detected, but absolute link support disabled.")
-                    # Return the whole string, unaltered
                     return filename
             else:
                 files = self.filenames.get(search_name)
@@ -82,11 +85,17 @@ class EzLinksReplacer:
     # Generate a Link with the details supplied by an md link
     def _get_md_link(self, match: re.Match) -> Link:
         groups = match.groupdict()
-        target = self._get_link_to_file(groups.get('md_filename'))
+        # Straight .get doesn't work, because in absence of a capture group,
+        # it is '', not None
+        full_match = match.group(0)
+        md_filename = groups.get('md_filename')
+        filename = md_filename if md_filename not in ['', None] else self.page_url
+        target = self._get_link_to_file(filename)
         return Link(
             image=groups.get('md_is_image') or groups.get('md_alt_is_image'),
             text=groups.get('md_text', ''),
             target=target,
+            title=groups.get('md_title', ''),
             anchor=groups.get('md_anchor', '')
         )
 
@@ -114,7 +123,8 @@ class EzLinksReplacer:
             image=groups.get('wiki_is_image'),
             text=wiki_text if wiki_text and wiki_text != '' else wiki_link,
             target=link,
-            anchor=anchor
+            anchor=anchor,
+            title=wiki_text
         )
         return result
 
@@ -165,15 +175,15 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
 
         # +------------------------------+
         # | MD Link Regex Capture Groups |
-        # +---------------------------------------------------------------------------------------+
-        # | md_is_image      |  Contains ! when an image tag, or empty if not (check both)        |
-        # | md_alt_is_image  |  Contains ! when an image tag, or empty if not (check both)        |
-        # | md_text          |  Contains the Link Text between [md_text]                          |
-        # | md_target        |  Contains the full target of the Link (filename.md#anchor)         |
-        # | md_filename      |  Contains just the filename portion of the target (filename.md)    |
-        # | md_anchor        |  Contains the anchor, if present (e.g. file.md#anchor -> 'anchor') |
-        # +----------------------------------------------------------------------------------------
-        # TODO: Support - [Alt Text](my-page.md "My Title") (Link titles)
+        # +-------------------------------------------------------------------------------------+
+        # | md_is_image      |  Contains ! when an image tag, or empty if not (check both)      |
+        # | md_alt_is_image  |  Contains ! when an image tag, or empty if not (check both)      |
+        # | md_text          |  Contains the Link Text between [md_text]                        |
+        # | md_target        |  Contains the full target of the Link (filename.md#anchor)       |
+        # | md_filename      |  Contains just the filename portion of the target (filename.md)  |
+        # | md_anchor        |  Contains the anchor, if present (e.g. `file.md#anchor`)         |
+        # | md_title         |  Contains the title, if present (e.g. `file.md "My Title"`)      |
+        # +-------------------------------------------------------------------------------------+
         md_link_pattern =\
             r'(?:'                                        \
                 r'(?P<md_is_image>\!?)\[\]'               \
@@ -185,8 +195,9 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
             r')'                                          \
             r'\('                                         \
                 r'(?P<md_target>'                         \
-                    r'(?P<md_filename>\/?[^#\ \)]+)'      \
-                        r'(?:#(?P<md_anchor>[^\ \)]*)?)?' \
+                    r'(?P<md_filename>\/?[^#\ \)]*)?'     \
+                    r'(?:#(?P<md_anchor>[^\)\"]*)?)?'     \
+                    r'(?:\ \"(?P<md_title>[^\"\)]*)\")?'  \
                 r')'                                      \
             r'\)'
 
