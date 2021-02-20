@@ -1,4 +1,7 @@
 # mkdocs-ezlinks-plugin
+
+![](logo.png)
+
 Plugin for mkdocs which enables easier linking between pages.
 
 This plugin was written in order to provide an up-to-date and
