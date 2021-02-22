@@ -6,6 +6,7 @@ nav:
     - 'my-project/link_updates.md'
     - 'my-project/section/my-section.md'
     - 'other-project/project.md'
+    - 'other-project/fence-blocks.md'
 theme: readthedocs
 docs_dir: 'docs'
 use_directory_urls: false
