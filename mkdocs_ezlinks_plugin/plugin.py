@@ -3,8 +3,10 @@ import os
 import mkdocs
 from dataclasses import dataclass
 
+
 class BrokenLink(Exception):
     pass
+
 
 @dataclass
 class Link:
@@ -15,12 +17,14 @@ class Link:
     anchor: str
     title: str
 
+
 @dataclass
 class EzLinksOptions:
     ''' Dataclass to hold typed options from the configuration. '''
     strict: bool
     absolute: bool
     wikilinks: bool
+
 
 class EzLinksReplacer:
     def __init__(self, options: EzLinksOptions, filenames: list[str], root: str, page_url: str):
@@ -76,7 +80,7 @@ class EzLinksReplacer:
                 abs_to = os.path.join(self.root, files[0])
                 if len(files) > 1:
                     print(f"WARNING -  Link targeting a duplicate filename '{filename}'.")
-                    for idx,file in enumerate(files):
+                    for idx, file in enumerate(files):
                         active = "<-- Active" if idx == 0 else ""
                         print(f"   [{idx}] - {file} {active}")
             abs_to = abs_to + '.md' if '.' not in abs_to else abs_to
@@ -87,7 +91,6 @@ class EzLinksReplacer:
         groups = match.groupdict()
         # Straight .get doesn't work, because in absence of a capture group,
         # it is '', not None
-        full_match = match.group(0)
         md_filename = groups.get('md_filename')
         filename = md_filename if md_filename not in ['', None] else self.page_url
         target = self._get_link_to_file(filename)
@@ -185,22 +188,23 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
         # | md_title         |  Contains the title, if present (e.g. `file.md "My Title"`)      |
         # +-------------------------------------------------------------------------------------+
         md_link_pattern =\
-            r'(?:'                                        \
-                r'(?P<md_is_image>\!?)\[\]'               \
-                r'|'                                      \
-                r'(?P<md_alt_is_image>\!?)'               \
-                r'\['                                     \
-                    r'(?P<md_text>.+)'                    \
-                r'\]'                                     \
-            r')'                                          \
-            r'\('                                         \
-                r'(?P<md_target>'                         \
-                    r'(?P<md_filename>\/?[^#\ \)]*)?'     \
-                    r'(?:#(?P<md_anchor>[^\)\"]*)?)?'     \
-                    r'(?:\ \"(?P<md_title>[^\"\)]*)\")?'  \
-                r')'                                      \
-            r'\)'
-
+            r'''
+            (?:
+                (?P<md_is_image>\!?)\[\]
+                |
+                (?P<md_alt_is_image>\!?)
+                \[
+                    (?P<md_text>.+)
+                \]
+            )
+            \(
+                (?P<md_target>
+                    (?P<md_filename>\/?[^\#\ \)]*)?
+                    (?:\#(?P<md_anchor>[^\)\"]*)?)?
+                    (?:\ \"(?P<md_title>[^\"\)]*)\")?
+                )
+            \)
+            '''
         # +--------------------------------+
         # | Wiki Link Regex Capture Groups |
         # +------------------------------------------------------------------------------------+
@@ -210,20 +214,36 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
         # | wiki_text     |  Contains the text of the link.                                    |
         # +------------------------------------------------------------------------------------+
         wiki_link_pattern =\
-            r'(?P<wiki_is_image>[\!]?)'             \
-            r'\[\['                                 \
-                r'(?P<wiki_link>[^#\|\]]+)'         \
-                r'(?:#(?P<wiki_anchor>[^\|\]]+)?)?' \
-                r'(?:\|(?P<wiki_text>[^\]]+)?)?'   \
-            r'\]\]'
+            r'''
+            (?P<wiki_is_image>[\!]?)
+            \[\[
+                (?P<wiki_link>[^#\|\]]+)
+                (?:\#(?P<wiki_anchor>[^\|\]]+)?)?
+                (?:\|(?P<wiki_text>[^\]]+)?)?
+            \]\]
+            '''
 
         patterns = [md_link_pattern]
 
         if self.config['wikilinks']:
-          patterns.append(wiki_link_pattern)
+            patterns.append(wiki_link_pattern)
 
+        pattern_str = '|'.join(patterns)
         # Multi-Pattern search pattern, to capture  all link types at once
-        uber_pattern = f"(?:{'|'.join(patterns)})"
+        uber_pattern = re.compile(
+            fr'''
+            (?: # Attempt to match a code block
+                [`]{{3}}
+                (?:[\w\W]*?)
+                [`]{{3}}$
+            | # Match an inline code block
+                `[\w\W]*?`
+            )
+            | # Attempt to match any one of the subpatterns
+            (?:
+                {pattern_str}
+            )
+            ''', re.X | re.MULTILINE)
 
         options = EzLinksOptions(**self.config, strict=config['strict'])
         markdown = re.sub(
