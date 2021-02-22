@@ -7,6 +7,9 @@ Plugin for mkdocs which enables easier linking between pages.
 This plugin was written in order to provide an up-to-date and
 feature complete plugin for easily referencing documents
 with a variety of features:
+
+* Optimized file name lookup
+* Code Block Preservation
 * File name linking (e.g. `[Text](file#anchor "title")`)
 * Absolute paths (e.g. `[Text](/link/to/file.md)`)
 * WikiLinks support (e.g. `[[Link#anchor|Link Title]]`)
