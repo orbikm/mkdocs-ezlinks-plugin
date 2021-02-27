@@ -19,24 +19,25 @@ class WikiLinkScanner(BaseLinkScanner):
             r'''
             (?P<wiki_is_image>[\!]?)
             \[\[
-                (?P<wiki_link>[^#\|\]]+)
+                (?P<wiki_link>[^#\|\]]*?)
                 (?:\#(?P<wiki_anchor>[^\|\]]+)?)?
                 (?:\|(?P<wiki_text>[^\]]+)?)?
             \]\]
             '''
 
     def match(self, match: Match) -> bool:
-        return match.groupdict().get('wiki_link') not in ['', None]
+        groups = match.groupdict()
+        return groups.get('wiki_link') or groups.get('wiki_anchor')
 
     def extract(self, match: Match) -> Link:
         groups = match.groupdict()
 
         image = groups.get('wiki_is_image') or ''
         link = groups.get('wiki_link') or ''
-        text = groups.get('wiki_text') or link
         anchor = groups.get('wiki_anchor') or ''
+        text = groups.get('wiki_text') or link or anchor
 
-        if not (link or text):
+        if not (link or text or anchor):
             raise BrokenLink(f"Could not extract required field `wiki_link` from {match.group(0)}")
 
         link = self._slugify(link)

@@ -26,5 +26,4 @@ class Link:
 class EzLinksOptions:
     ''' Dataclass to hold typed options from the configuration. '''
     strict: bool
-    absolute: bool
     wikilinks: bool

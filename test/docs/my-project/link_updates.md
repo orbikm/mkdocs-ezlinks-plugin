@@ -8,3 +8,7 @@
 
 ![Alt Text](puppy "Test Title")
 
+[[#Section Heading]]
+
+[[#Section Heading|Title]]
+
