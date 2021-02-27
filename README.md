@@ -34,15 +34,11 @@ plugins:
     - search
     - ezlinks:
         - wikilinks: {true|false}
-        - absolute: {true|false}
 ```
 ## wikilinks
 Determines whether to scan for wikilinks or not (See [WikiLink Support](#wikilink-support)).
 > **NOTE**  
 >  This plugin feature does not function well when the 'wikilinks' markdown extension is enabled. This plugin's functionality should replace the need for enabling said extension.
-
-## absolute
-Determines whether to translate absolute liks to relative links (see [Absolute Links](#absolute-links)).
 
 # Features
 ## Filename Links
@@ -81,8 +77,6 @@ Given that we are entering the links into the `folder/document.md` file,
 |Link|Translation|
 |----|-----------|
 | `![Link Text](/static/image.png)` | `![Link Text](../static/image.png)` |
-
-This behavior can be disabled by setting the `absolute` property to `false` in the mkdocs configuration file.
 
 # WikiLink Support
 Given a layout such as
