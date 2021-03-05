@@ -41,9 +41,9 @@ class FileMapper:
                     duplicates = ""
                     for idx, file in enumerate(files):
                         active = "<-- Active" if idx == 0 else ""
-                        duplicates += f"  [{idx}]   - {file} {active}"
-                    self.logger.debug("[EzLinks] Link targeting a duplicate"
-                                      f"file '{file_name}'.\n{duplicates}")
+                        duplicates += f"  [{idx}]   - {file} {active}\n"
+                    self.logger.warning("[EzLinks] Link targeting a duplicate "
+                                        f"file '{file_name}'.\n{duplicates}")
             abs_to = abs_to + '.md' if '.' not in abs_to else abs_to
             return os.path.join(self.root, abs_to)
 
