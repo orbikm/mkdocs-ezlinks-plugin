@@ -29,6 +29,7 @@ class MdLinkScanner(BaseLinkScanner):
             )
             \(
                 (?P<md_target>
+                    (?!http://|https://)
                     (?P<md_filename>\/?[^\#\ \)]*)?
                     (?:\#(?P<md_anchor>[^\)\"]*)?)?
                     (?:\ \"(?P<md_title>[^\"\)]*)\")?
