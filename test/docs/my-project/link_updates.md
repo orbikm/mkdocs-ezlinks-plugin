@@ -12,3 +12,9 @@
 
 [[#Section Heading|Title]]
 
+
+
+[External Link](https://www.example.com)
+[External Link](http://www.example.com)
+[External Link w/ Title](https://www.example.com "LINK TITLE")
+[External link no scheme](www.example.com)

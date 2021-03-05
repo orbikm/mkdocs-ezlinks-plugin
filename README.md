@@ -33,7 +33,7 @@ plugins:
 plugins:
     - search
     - ezlinks:
-        - wikilinks: {true|false}
+        wikilinks: {true|false}
 ```
 ## wikilinks
 Determines whether to scan for wikilinks or not (See [WikiLink Support](#wikilink-support)).
