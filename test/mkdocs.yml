@@ -12,4 +12,5 @@ docs_dir: 'docs'
 use_directory_urls: false
 plugins:
     - search
-    - ezlinks
+    - ezlinks:
+       wikilinks: true

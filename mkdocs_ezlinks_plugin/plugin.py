@@ -1,10 +1,16 @@
+import logging
+
 import mkdocs
+from mkdocs.utils import warning_filter
 
 from .file_mapper import FileMapper
 from .replacer import EzLinksReplacer
 from .scanners.md_link_scanner import MdLinkScanner
 from .scanners.wiki_link_scanner import WikiLinkScanner
 from .types import EzLinksOptions
+
+LOGGER = logging.getLogger(f"mkdocs.plugins.{__name__}")
+LOGGER.addFilter(warning_filter)
 
 
 class EzLinksPlugin(mkdocs.plugins.BasePlugin):
@@ -16,7 +22,8 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
         self.replacer = EzLinksReplacer(
             root=config['docs_dir'],
             file_map=self.file_mapper,
-            options=EzLinksOptions(**self.config, strict=config['strict'])
+            options=EzLinksOptions(**self.config),
+            logger=LOGGER
         )
 
         self.replacer.add_scanner(MdLinkScanner())
@@ -30,7 +37,8 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
     def on_files(self, files: list[mkdocs.structure.files.File], config):
         self.file_mapper = FileMapper(
             root=config['docs_dir'],
-            files=files
+            files=files,
+            logger=LOGGER
         )
 
         # After the file map has been built, initialize what we can that will

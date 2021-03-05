@@ -6,9 +6,14 @@ from .types import BrokenLink
 
 
 class FileMapper:
-    def __init__(self, root: str, files: list[mkdocs.structure.pages.Page]):
+    def __init__(
+            self,
+            root: str,
+            files: list[mkdocs.structure.pages.Page],
+            logger=None):
         self.root = root
         self.file_map = {}
+        self.logger = logger
 
         for file in files:
             # Ignore any files generated from files outside of the docs root,
@@ -20,7 +25,8 @@ class FileMapper:
                 if not self.file_map.get(search_name):
                     self.file_map[search_name] = []
                 else:
-                    print(f"WARNING -  Duplicate filename `{search_name}` detected. Linking to it will only match the first file.")
+                    self.logger.debug("[EzLinks] Duplicate filename "
+                                      f"`{search_name}` detected.")
                 self.file_map[search_name].append(file.src_path)
 
     def search(self, file_name: str):
@@ -32,10 +38,12 @@ class FileMapper:
                     return None
                 abs_to = files[0]
                 if len(files) > 1:
-                    print(f"WARNING -  Link targeting a duplicate file '{file_name}'.")
+                    duplicates = ""
                     for idx, file in enumerate(files):
                         active = "<-- Active" if idx == 0 else ""
-                        print(f"  [{idx}]   - {file} {active}")
+                        duplicates += f"  [{idx}]   - {file} {active}"
+                    self.logger.debug("[EzLinks] Link targeting a duplicate"
+                                      f"file '{file_name}'.\n{duplicates}")
             abs_to = abs_to + '.md' if '.' not in abs_to else abs_to
             return os.path.join(self.root, abs_to)
 

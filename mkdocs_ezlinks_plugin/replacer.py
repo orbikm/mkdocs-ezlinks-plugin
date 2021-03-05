@@ -12,11 +12,13 @@ class EzLinksReplacer:
             self,
             root: str,
             file_map: FileMapper,
-            options: EzLinksOptions):
+            options: EzLinksOptions,
+            logger):
         self.root = root
         self.file_map = file_map
         self.options = options
         self.scanners = []
+        self.logger = logger
 
     def add_scanner(self, scanner: BaseLinkScanner) -> None:
         self.scanners.append(scanner)
@@ -68,15 +70,15 @@ class EzLinksReplacer:
                         # Otherwise, search for the target through the file map
                         search_result = self.file_map.search(link.target)
                         if not search_result:
-                            raise BrokenLink(f"Did not find '{link.target}' in file map.")
+                            raise BrokenLink(f"'{link.target}' not found.")
                         link.target = search_result
 
                     link.target = os.path.relpath(link.target, abs_from)
                     return link.render()
         except BrokenLink as ex:
-            if self.options.strict:
-                print(f"ERROR -  {ex}")
-            else:
-                print(f"WARNING -  {ex}")
+            # Log these out as Debug messages, as the regular mkdocs
+            # strict mode will log out broken links.
+            self.logger.debug(f"[EzLinks] {ex}")
+
         # Fall through, return the original link unaltered, and let mkdocs handle it
         return match.group(0)
