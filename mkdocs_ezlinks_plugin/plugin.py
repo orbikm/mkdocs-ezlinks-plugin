@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 import mkdocs
 from mkdocs.utils import warning_filter
@@ -34,7 +35,7 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
         self.replacer.compile()
 
     # Build a fast lookup of all files (by file name)
-    def on_files(self, files: list[mkdocs.structure.files.File], config):
+    def on_files(self, files: List[mkdocs.structure.files.File], config):
         self.file_mapper = FileMapper(
             root=config['docs_dir'],
             files=files,

@@ -21,6 +21,7 @@ setup(
   python_requires='>=3.6',
   install_requires=[
     'mkdocs>=1.1.0',
+    'dataclasses>=0.7; python_version < "3.7.0"'
   ],
   classifiers=[
     'Development Status :: 3 - Alpha',

@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 import mkdocs
 
@@ -9,7 +10,7 @@ class FileMapper:
     def __init__(
             self,
             root: str,
-            files: list[mkdocs.structure.pages.Page],
+            files: List[mkdocs.structure.pages.Page],
             logger=None):
         self.root = root
         self.file_map = {}
@@ -34,7 +35,8 @@ class FileMapper:
             if file_name.startswith('/'):
                 abs_to = file_name[1:]
             else:
-                if not (files := self.file_map.get(search_name)):
+                files = self.file_map.get(search_name)
+                if not files:
                     return None
                 abs_to = files[0]
                 if len(files) > 1:
