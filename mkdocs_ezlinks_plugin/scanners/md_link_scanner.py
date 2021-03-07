@@ -24,7 +24,7 @@ class MdLinkScanner(BaseLinkScanner):
                 |
                 (?P<md_alt_is_image>\!?)
                 \[
-                    (?P<md_text>.+)
+                    (?P<md_text>[^\]]+)
                 \]
             )
             \(

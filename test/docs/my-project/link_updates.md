@@ -18,3 +18,16 @@
 [External Link](http://www.example.com)
 [External Link w/ Title](https://www.example.com "LINK TITLE")
 [External link no scheme](www.example.com)
+
+MD Links:
+
+[My Section](my-section) [My Section Link 2](my-section.md) [My Section Link 3](my-section.md#anchor "Test")
+
+
+WikiLinks:
+
+[[My Section]] [[My Section|My Section 2]] [[My Section|My Section 3]]
+
+Both:
+
+[[My Section|Wiki Link]] [My Section 2](my-section) [[Fence Blocks]]
