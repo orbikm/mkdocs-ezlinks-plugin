@@ -7,6 +7,12 @@ nav:
     - 'my-project/section/my-section.md'
     - 'other-project/project.md'
     - 'other-project/fence-blocks.md'
+    - Disambiguation: disambiguation/index.md
+    - 'disambiguation/sub1/sub2/index.md'
+    - 'disambiguation/sub1/sub2/about.md'
+    - 'disambiguation/sub1/sub4/index.md'
+    - 'disambiguation/sub3/sub4/index.md'
+    - 'disambiguation/sub3/sub4/about.md'
 theme: readthedocs
 docs_dir: 'docs'
 use_directory_urls: false

@@ -8,20 +8,21 @@ with open("README.md", 'r') as f:
 
 setup(
   name='mkdocs-ezlinks-plugin',
-  version='0.1.8',
+  version='0.1.9',
   description=description,
   long_description=long_description,
   long_description_content_type='text/markdown',
   keywords='mkdocs',
   url='https://github.com/orbikm/mkdocs-ezlinks-plugin',
-  download_url='https://github.com/orbikm/mkdocs-ezlinks-plugin/archive/v_0.1.8.tar.gz',
+  download_url='https://github.com/orbikm/mkdocs-ezlinks-plugin/archive/v_0.1.9.tar.gz',
   author='Mick Orbik',
   author_email='mick.orbik@gmail.com',
   license='MIT',
   python_requires='>=3.6',
   install_requires=[
     'mkdocs>=1.1.0',
-    'dataclasses>=0.7; python_version < "3.7.0"'
+    'dataclasses>=0.7; python_version < "3.7.0"',
+    'pygtrie==2.*'
   ],
   classifiers=[
     'Development Status :: 3 - Alpha',

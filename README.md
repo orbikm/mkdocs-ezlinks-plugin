@@ -33,8 +33,28 @@ plugins:
 plugins:
     - search
     - ezlinks:
+        warn_ambiguities: {true|false}
         wikilinks: {true|false}
 ```
+## warn_ambiguities
+Determines whether to warn when an abmiguous link is encountered. An ambiguous link is one that would have more than one possible targets. For example, if you had the following document setup:
+
+```
++ folder1/
+  +-- index.md
++ folder2/
+  +-- index.md
+```
+
+If you had any links that targeted `index.md`, EzLinks is not able to determine _which_ of the instances of `index.md` to target, thus it is ambiguous.
+
+### Disambiguating links
+In the circumstance above, it would be possible to disambiguate _which_ `index.md` by including the containing folder, e.g. `folder1/index.md` or `folder2/index.md`. Note: This also works in conjunction with extension-less targets, e.g. `folder1/index` and `folder2/index`.
+
+This disambiguation can continue with as many parent directories are specified, for instance `folder1/subfolder1/subfolder2/index.md`, specifying as many path components as necessary to fully disambiguate the links.
+
+This method of disambiguation is supported by each of the supported link formats (MD links, wiki/roamlinks). For instance, you can use `[[folder1/index|Link Title]]` and `[[folder2/index.md]].
+
 ## wikilinks
 Determines whether to scan for wikilinks or not (See [WikiLink Support](#wikilink-support)).
 > **NOTE**  

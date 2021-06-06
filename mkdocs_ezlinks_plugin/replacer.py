@@ -25,6 +25,7 @@ class EzLinksReplacer:
 
     def replace(self, path: str, markdown: str) -> str:
         self.path = path
+
         # Multi-Pattern search pattern, to capture  all link types at once
         return re.sub(self.regex, self._do_replace, markdown)
 
@@ -68,7 +69,7 @@ class EzLinksReplacer:
                             raise BrokenLink(f"No target for link '{match.group(0)}'")
                     else:
                         # Otherwise, search for the target through the file map
-                        search_result = self.file_map.search(link.target)
+                        search_result = self.file_map.search(self.path, link.target)
                         if not search_result:
                             raise BrokenLink(f"'{link.target}' not found.")
                         link.target = search_result
