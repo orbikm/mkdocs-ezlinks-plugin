@@ -58,5 +58,5 @@ class WikiLinkScanner(BaseLinkScanner):
         # Convert all spaces to '-'
         slug = re.sub(r'\ ', r'-', slug)
         # Convert all unsupported characters to ''
-        slug = re.sub(r'[^\w\u4e00-\u9fff\- ]', '', slug)
+        slug = re.sub(r'[^\/^\w\u4e00-\u9fff\- ]', '', slug)
         return slug

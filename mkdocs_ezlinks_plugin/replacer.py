@@ -69,7 +69,7 @@ class EzLinksReplacer:
                             raise BrokenLink(f"No target for link '{match.group(0)}'")
                     else:
                         # Otherwise, search for the target through the file map
-                        search_result = self.file_map.search(link.target)
+                        search_result = self.file_map.search(self.path, link.target)
                         if not search_result:
                             raise BrokenLink(f"'{link.target}' not found.")
                         link.target = search_result

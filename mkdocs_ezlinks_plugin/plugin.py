@@ -17,6 +17,7 @@ LOGGER.addFilter(warning_filter)
 class EzLinksPlugin(mkdocs.plugins.BasePlugin):
     config_scheme = (
         ('wikilinks',  mkdocs.config.config_options.Type(bool, default=True)),
+        ('warn_ambiguities', mkdocs.config.config_options.Type(bool, default=False))
     )
 
     def init(self, config):
@@ -37,6 +38,7 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
     # Build a fast lookup of all files (by file name)
     def on_files(self, files: List[mkdocs.structure.files.File], config):
         self.file_mapper = FileMapper(
+            options=EzLinksOptions(**self.config),
             root=config['docs_dir'],
             files=files,
             logger=LOGGER

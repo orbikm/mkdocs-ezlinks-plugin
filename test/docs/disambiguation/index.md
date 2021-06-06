@@ -12,3 +12,7 @@
 [Test](sub3/about)
 
 [Partial](sub4/index)
+
+[[my-project/index|Test Title!!]]
+
+[[sub4/index|Sub4 Index]]

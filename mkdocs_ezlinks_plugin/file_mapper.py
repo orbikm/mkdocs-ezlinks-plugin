@@ -4,13 +4,17 @@ from typing import List
 import pygtrie
 import mkdocs
 
+from .types import EzLinksOptions
+
 
 class FileMapper:
     def __init__(
             self,
+            options: EzLinksOptions,
             root: str,
             files: List[mkdocs.structure.pages.Page],
             logger=None):
+        self.options = options
         self.root = root
         self.file_trie = pygtrie.StringTrie(separator=os.sep)
         self.logger = logger
@@ -22,7 +26,7 @@ class FileMapper:
             self._store_file(file.src_path)
 
     def _store_file(self, file_path):
-        # Store the reversed path representation of the file with and
+        # Store the pathwise reversed representation of the file with and
         # without file extension.
         search_exprs = [file_path, os.path.splitext(file_path)[0]]
         for search_expr in search_exprs:
@@ -30,7 +34,7 @@ class FileMapper:
             components.reverse()
             self.file_trie[os.sep.join(components)] = file_path
 
-    def search(self, file_name: str):
+    def search(self, from_file: str, file_name: str):
         abs_to = file_name
         if abs_to.startswith('/'):
             abs_to = abs_to[1:]
@@ -43,14 +47,16 @@ class FileMapper:
                 values = self.file_trie.values(search_for)
                 abs_to = values[0]
                 if len(values) > 1:
-                    duplicates = ""
+                    ambiguities = ""
                     for idx, file in enumerate(values):
-                        active = "<-- (Selected)" if idx == 0 else ""
-                        duplicates += f"  [{idx}]   - {file} {active}\n"
+                        active = "<--- (Selected)" if idx == 0 else ""
+                        ambiguities += f"  {idx}: {file} {active}\n"
 
-                    self.logger.debug(f"[EzLink] Link targeting '{search_for}' is "\
-                                      f"ambiguous. Consider further disambiguating if possible.\n"\
-                                      + duplicates)
+                    log_fn = self.logger.warning if self.options.warn_ambiguities else self.logger.debug
+                    log_fn(f"[EzLink] Link ambiguity detected.\n"
+                           f"File: '{from_file}'\n"
+                           f"Link: '{search_for}'\n"
+                           "Ambiguities:\n" + ambiguities)
 
         abs_to = abs_to + '.md' if '.' not in abs_to else abs_to
         return os.path.join(self.root, abs_to)

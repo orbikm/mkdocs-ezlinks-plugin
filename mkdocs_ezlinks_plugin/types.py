@@ -26,3 +26,4 @@ class Link:
 class EzLinksOptions:
     ''' Dataclass to hold typed options from the configuration. '''
     wikilinks: bool
+    warn_ambiguities: bool
