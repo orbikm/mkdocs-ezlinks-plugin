@@ -49,9 +49,25 @@ Determines whether to warn when an abmiguous link is encountered. An ambiguous l
 If you had any links that targeted `index.md`, EzLinks is not able to determine _which_ of the instances of `index.md` to target, thus it is ambiguous.
 
 ### Disambiguating links
-In the circumstance above, it would be possible to disambiguate _which_ `index.md` by including the containing folder, e.g. `folder1/index.md` or `folder2/index.md`. Note: This also works in conjunction with extension-less targets, e.g. `folder1/index` and `folder2/index`.
+By default, EzLinks will attempt to resolve the ambiguity automatically. It does this by searching for the file closest to the file that is linking (with respect to the folder hierarchy).
 
-This disambiguation can continue with as many parent directories are specified, for instance `folder1/subfolder1/subfolder2/index.md`, specifying as many path components as necessary to fully disambiguate the links.
+```
++ guide/
+  + test.md
+  + getting_started/
+      + index.md
++ tutorials/
+  - test.md
+  + getting_started/
+      + index.md
+  + more_advanced/
+      + index.md
+```
+If you placed a link inside `guide/getting_started/index.md` such as `[Test](test)`, the resulting link has ambiguity, but in the default case, the `guide/test.md` file is _closer_ than the `tutorials/test.md`, therefore, it will select that file.
+
+In the circumstance above, it would be possible to disambiguate _which_ `test.md` by including the containing folder, e.g. `guide/test.md` or `tutorials/test.md`. Note: This also works in conjunction with extension-less targets, e.g. `guide/test` and `tutorials/test`.
+
+This disambiguation can continue with as many parent directories are specified, for instance `folder1/subfolder1/subfolder2/test.md`, specifying as many path components as necessary to fully disambiguate the links.
 
 This method of disambiguation is supported by each of the supported link formats (MD links, wiki/roamlinks). For instance, you can use `[[folder1/index|Link Title]]` and `[[folder2/index.md]].
 
