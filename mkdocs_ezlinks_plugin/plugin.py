@@ -24,6 +24,7 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
         self.replacer = EzLinksReplacer(
             root=config['docs_dir'],
             file_map=self.file_mapper,
+            use_directory_urls=config['use_directory_urls'],
             options=EzLinksOptions(**self.config),
             logger=LOGGER
         )

@@ -43,20 +43,39 @@ class FileMapper:
             search_for.reverse()
             search_for = f"{os.sep}".join(search_for)
 
-            if self.file_trie.has_subtrie(search_for):
+            # If we have an _exact_ match in the trie, we don't need to search
+            if search_for in self.file_trie:
+                abs_to = self.file_trie[search_for]
+            elif self.file_trie.has_subtrie(search_for):
+                # If we don't have an exact match, but have a partial prefix
                 values = self.file_trie.values(search_for)
                 abs_to = values[0]
-                if len(values) > 1:
+                has_ambiguity = len(values) > 1
+                # If we have ambiguities, attempt to auto-disambiguate by performing
+                # an iterative ascent of the link file's path. In this way, we should
+                # be able to get the result closest to the file doing the linking
+                if has_ambiguity:
+                    file_path = os.path.dirname(from_file)
+                    components = file_path.split(os.sep)
+                    components.reverse()
+                    for path_component in components:
+                        search_for += f"{os.sep}{path_component}"
+                        if self.file_trie.has_subtrie(search_for) or search_for in self.file_trie:
+                            new_vals = self.file_trie.values(search_for)
+                            if len(new_vals) == 1:
+                                abs_to = new_vals[0]
+                                # We've resolved the ambiguity, so no need to warn
+                                has_ambiguity = False
+                                break
+
+                if has_ambiguity:
                     ambiguities = ""
                     for idx, file in enumerate(values):
                         active = "<--- (Selected)" if idx == 0 else ""
                         ambiguities += f"  {idx}: {file} {active}\n"
-
                     log_fn = self.logger.warning if self.options.warn_ambiguities else self.logger.debug
                     log_fn(f"[EzLink] Link ambiguity detected.\n"
                            f"File: '{from_file}'\n"
                            f"Link: '{search_for}'\n"
                            "Ambiguities:\n" + ambiguities)
-
-        abs_to = abs_to + '.md' if '.' not in abs_to else abs_to
         return os.path.join(self.root, abs_to)

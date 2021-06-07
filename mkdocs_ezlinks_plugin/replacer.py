@@ -12,10 +12,12 @@ class EzLinksReplacer:
             self,
             root: str,
             file_map: FileMapper,
+            use_directory_urls: bool,
             options: EzLinksOptions,
             logger):
         self.root = root
         self.file_map = file_map
+        self.use_directory_urls = use_directory_urls
         self.options = options
         self.scanners = []
         self.logger = logger
@@ -70,6 +72,9 @@ class EzLinksReplacer:
                     else:
                         # Otherwise, search for the target through the file map
                         search_result = self.file_map.search(self.path, link.target)
+                        if not self.use_directory_urls:
+                            search_result = search_result + '.md' if '.' not in search_result else search_result
+
                         if not search_result:
                             raise BrokenLink(f"'{link.target}' not found.")
                         link.target = search_result
