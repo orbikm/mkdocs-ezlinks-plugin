@@ -17,6 +17,8 @@ class MdLinkScanner(BaseLinkScanner):
         # | md_anchor        |  Contains the anchor, if present (e.g. `file.md#anchor`)         |
         # | md_title         |  Contains the title, if present (e.g. `file.md "My Title"`)      |
         # +-------------------------------------------------------------------------------------+
+        # Anything with a scheme should be ignored (was http://|https://) but I needed jetbrains and it
+        # seems reasonable to allow anything scheme like. Adjust regex to be more generous if needed
         return \
             r'''
             (?:
@@ -29,7 +31,7 @@ class MdLinkScanner(BaseLinkScanner):
             )
             \(
                 (?P<md_target>
-                    (?!http://|https://)
+                    (?![a-zA-Z]+://)
                     (?P<md_filename>\/?[^\#\ \)]*)?
                     (?:\#(?P<md_anchor>[^\)\"]*)?)?
                     (?:\ \"(?P<md_title>[^\"\)]*)\")?
