@@ -13,11 +13,24 @@
 [[#Section Heading|Title]]
 
 
-
+## External Links, containing schemes
 [External Link](https://www.example.com)
+
 [External Link](http://www.example.com)
+
+[External Link](mailto://person@example.com)
+
+[External Link](dig://example.com)
+
+[External Link](ftp://example.com)
+
+[External Link](ssh://example.com)
+
 [External Link w/ Title](https://www.example.com "LINK TITLE")
-[External link no scheme](www.example.com)
+
+[External link no scheme](www.example.com) (broken)
+
+
 
 MD Links:
 

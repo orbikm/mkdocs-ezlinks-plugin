@@ -12,6 +12,7 @@ class MdLinkScanner(BaseLinkScanner):
         # | md_is_image      |  Contains ! when an image tag, or empty if not (check both)      |
         # | md_alt_is_image  |  Contains ! when an image tag, or empty if not (check both)      |
         # | md_text          |  Contains the Link Text between [md_text]                        |
+        # | md_protocol      |  Rejects match if link contains a protocol scheme (e.g. http)    |
         # | md_target        |  Contains the full target of the Link (filename.md#anchor)       |
         # | md_filename      |  Contains just the filename portion of the target (filename.md)  |
         # | md_anchor        |  Contains the anchor, if present (e.g. `file.md#anchor`)         |
@@ -29,7 +30,7 @@ class MdLinkScanner(BaseLinkScanner):
             )
             \(
                 (?P<md_target>
-                    (?!http://|https://)
+                    (?!(?P<md_protocol>[a-z][a-z0-9+\-.]*:\/\/))
                     (?P<md_filename>\/?[^\#\ \)]*)?
                     (?:\#(?P<md_anchor>[^\)\"]*)?)?
                     (?:\ \"(?P<md_title>[^\"\)]*)\")?
