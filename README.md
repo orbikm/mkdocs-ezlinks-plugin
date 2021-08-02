@@ -28,6 +28,25 @@ plugins:
 > **NOTE**  
 >   If you have no plugins entry in your config file yet, you'll likely also want to add the search plugin. MkDocs enables it by default if there is no plugins entry set, but now you have to enable it explicitly.
 
+# Release Log
+
+## Release 0.1.12
+This is a bugfix release.
+
+Issues addressed:
+  * GH issue #25, `Absolute links not using http:// or https:// are treated as relative`.
+    Dev @robbcrg (thanks!) reported that links with protocol schemes other than those two should also be treated as
+    absolute links. The regex will exclude any link from a conformant protocol scheme from being converted using EzLinks.
+
+  * GH Issue #27, `Dictionary file cache is not being leveraged`.
+    An inverted comparison led to the fast file cache lookup never really being exercised. Now, if a filename is unique, it will find it in the fast file cache first, saving a more expensive full trie lookup.
+
+## Release 0.1.11
+This is a bugfix release. The prior release switched from a dictionary lookup to a prefix trie lookup strategy, which allowed for better disambiguation between links, but is more expensive. The bug was that, even if a link was direct, it would trigger a full trie search. Now, direct links
+are checked and returned directly if the file exists.
+
+Additionally, a slight performance improvement was made where, in the case that a filename is unique to the entire site, it will rely on a fast dictionary lookup instead of a trie lookup.
+
 # Configuration Options
 ```
 plugins:
@@ -132,15 +151,6 @@ and these links are entered in `folder1/main.md`, this is how wikilinks will be 
 | `![[Puppy]]` | `![Puppy](../images/puppy.png)` | `[[Page Name#Section Heading]]` | `[Page Name](../relative/path/to/page-name.md#section-heading)` |
 | `[[Page Name\|Link Text]]` | `[Link Text](../folder2/page-name.md)` |
 | `[[Page Name#Section Heading\|Link Text]]` | `[Link Text](../folder2/page-name.md#section-heading)` |
-
-# Release Log
-I am going to start tracking changes per release in this section. I will backfill the prior release history when I have a chance, but will maintain the release log for each new release.
-
-## Release 0.1.11
-This is a bugfix release. The prior release switched from a dictionary lookup to a prefix trie lookup strategy, which allowed for better disambiguation between links, but is more expensive. The bug was that, even if a link was direct, it would trigger a full trie search. Now, direct links
-are checked and returned directly if the file exists.
-
-Additionally, a slight performance improvement was made where, in the case that a filename is unique to the entire site, it will rely on a fast dictionary lookup instead of a trie lookup.
 
 # Attribution
 This work is highly inspired from the following plugins:
