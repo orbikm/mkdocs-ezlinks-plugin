@@ -44,7 +44,7 @@ class FileMapper:
             self.file_trie[os.sep.join(components)] = file_path
 
         # Reduce the dictionary to only search terms that are unique
-        self.file_cache = {k: v for (k, v) in self.file_cache.items() if len(v) > 1}
+        self.file_cache = {k: v for (k, v) in self.file_cache.items() if len(v) == 1}
 
     def search(self, from_file: str, file_path: str):
         abs_to = file_path
@@ -62,7 +62,7 @@ class FileMapper:
 
             # Check fast file cache first
             if os.path.basename(file_name) in self.file_cache:
-                abs_to = self.file_cache[file_name]
+                abs_to = self.file_cache[file_name][0]
             else:
                 search_for = list(file_path.split(os.sep))
                 search_for.reverse()
