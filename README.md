@@ -13,6 +13,7 @@ with a variety of features:
 * File name linking (e.g. `[Text](file#anchor "title")`)
 * Absolute paths (e.g. `[Text](/link/to/file.md)`)
 * WikiLinks support (e.g. `[[Link#anchor|Link Title]]`)
+* Reference Link support (e.g. `[foo]: bar/ "Foo Title"`)
 
 # Install
 ```
@@ -29,6 +30,12 @@ plugins:
 >   If you have no plugins entry in your config file yet, you'll likely also want to add the search plugin. MkDocs enables it by default if there is no plugins entry set, but now you have to enable it explicitly.
 
 # Release Log
+
+## Release 0.1.13
+Adds support for Reference Link parsing. This is to support certain Foam editors, which generate [Refeerence Links](https://spec.commonmark.org/0.29/#reference-link).
+
+Issues Addressed:
+  * GH Issue #31, `Add support for reference link definitions`. Allows compatibility with certain Foam editors which generate Reference Links.
 
 ## Release 0.1.12
 This is a bugfix release.
@@ -54,6 +61,7 @@ plugins:
     - ezlinks:
         warn_ambiguities: {true|false}
         wikilinks: {true|false}
+        reference_links: {true|false}
 ```
 ## warn_ambiguities
 Determines whether to warn when an abmiguous link is encountered. An ambiguous link is one that would have more than one possible targets. For example, if you had the following document setup:
@@ -94,6 +102,9 @@ This method of disambiguation is supported by each of the supported link formats
 Determines whether to scan for wikilinks or not (See [WikiLink Support](#wikilink-support)).
 > **NOTE**  
 >  This plugin feature does not function well when the 'wikilinks' markdown extension is enabled. This plugin's functionality should replace the need for enabling said extension.
+
+## reference_links
+Determins whether to scan for Reference Links or not (See [Reference Links](https://spec.commonmark.org/0.29/#reference-link), e.g. `[foo]: /bar "Foo Bar"`)
 
 # Features
 ## Filename Links
