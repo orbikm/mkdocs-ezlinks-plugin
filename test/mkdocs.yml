@@ -13,6 +13,7 @@ nav:
     - 'disambiguation/sub1/sub4/index.md'
     - 'disambiguation/sub3/sub4/index.md'
     - 'disambiguation/sub3/sub4/about.md'
+    - 'reference-links/reference-links-test.md'
 theme: readthedocs
 docs_dir: 'docs'
 use_directory_urls: false
@@ -20,3 +21,4 @@ plugins:
     - search
     - ezlinks:
        wikilinks: true
+       reference_links: true
