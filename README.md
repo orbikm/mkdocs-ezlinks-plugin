@@ -31,8 +31,22 @@ plugins:
 
 # Release Log
 
+## Release 0.1.14
+This is a bugfix release.
+
+Issues addressed:
+  * GH issue #35, `Links between deeply nested subfolders fails.`
+    Dev @Mara-Li reported an issue with wikilinks between deeply nested subfolders failing due to an incorrectly
+    rendered relative link to the file.
+
+  * An unreported Windows usage issue
+    It's possible this bug existed for quite some time. Basically, on Windows, there was disagreement between the
+    path separators used at different points in the file mapping and searching process. This unifies it to store
+    and search for paths only with the `/` delimiter instead of the OS defined separator.
+
+
 ## Release 0.1.13
-Adds support for Reference Link parsing. This is to support certain Foam editors, which generate [Refeerence Links](https://spec.commonmark.org/0.29/#reference-link).
+Adds support for Reference Link parsing. This is to support certain Foam editors, which generate [Reference Links](https://spec.commonmark.org/0.29/#reference-link).
 
 Issues Addressed:
   * GH Issue #31, `Add support for reference link definitions`. Allows compatibility with certain Foam editors which generate Reference Links.
