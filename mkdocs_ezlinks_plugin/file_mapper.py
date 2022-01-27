@@ -1,8 +1,9 @@
 import os
 from typing import List
-
+from rich import print
 import pygtrie
 import mkdocs
+from pathlib import Path
 
 from .types import EzLinksOptions
 
@@ -28,7 +29,7 @@ class FileMapper:
 
     def _store_file(self, file_path):
         # Treat paths as posix format, regardless of OS
-        file_path = file_path.replace('\\', '/')
+        file_path = str(Path(file_path)) #Path is a better way to normalize filepath !
         # Store the pathwise reversed representation of the file with and
         # without file extension.
         search_exprs = [file_path, os.path.splitext(file_path)[0]]
@@ -39,7 +40,6 @@ class FileMapper:
                 self.file_cache[file_name] = [file_path]
             else:
                 self.file_cache[file_name].append(file_path)
-
             # Store in trie
             components = list(search_expr.split('/'))
             components.reverse()

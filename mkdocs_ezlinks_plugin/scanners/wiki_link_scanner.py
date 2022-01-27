@@ -40,7 +40,6 @@ class WikiLinkScanner(BaseLinkScanner):
         if not (link or text or anchor):
             raise BrokenLink(f"Could not extract required field `wiki_link` from {match.group(0)}")
 
-        link = self._slugify(link)
         if anchor:
             anchor = self._slugify(anchor)
 
@@ -58,5 +57,4 @@ class WikiLinkScanner(BaseLinkScanner):
         # Convert all spaces to '-'
         slug = re.sub(r'\ ', r'-', slug)
         # Convert all unsupported characters to ''
-        slug = re.sub(r'[^\/^\w\u4e00-\u9fff\- ]', '', slug)
         return slug
