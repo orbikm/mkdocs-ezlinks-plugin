@@ -5,27 +5,21 @@ long_description = description
 
 with open("README.md", "r") as f:
     long_description = f.read()
-
+with open("requirements.txt", "r") as f:
+    required=f.read().splitlines()
 setup(
-    name="mkdocs-ezlinks-plugin",
+    name="mkdocs-ezlinked-plugin",
     version="0.1.14",
     description=description,
     long_description=long_description,
     long_description_content_type="text/markdown",
-    keywords="mkdocs",
-    url="https://github.com/orbikm/mkdocs-ezlinks-plugin",
-    download_url=(
-        "https://github.com/orbikm/mkdocs-ezlinks-plugin/archive/v_0.1.14.tar.gz"
-    ),
-    author="Mick Orbik",
-    author_email="mick.orbik@gmail.com",
+    keywords="mkdocs, wikilinks, ezlinks, obsidian, roam",
+    url="https://github.com/Mara-Li/mkdocs-ezlinks-plugin",
+    author="Mara-Li",
+    author_email="Mara-Li@outlook.fr",
     license="MIT",
     python_requires=">=3.6",
-    install_requires=[
-        "mkdocs>=1.1.0",
-        'dataclasses>=0.7; python_version < "3.7.0"',
-        "pygtrie==2.*",
-    ],
+    install_requires=required,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
