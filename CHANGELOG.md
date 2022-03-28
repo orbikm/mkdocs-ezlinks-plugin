@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.17 (2022-03-28)
+### Fix
+* Update to mkdocs 1.3.0 ([`86d8313`](https://github.com/Mara-Li/mkdocs-ezlinked-plugin/commit/86d83132d8c3967e2fa7f89df7647d5393695648))
+* Update to mkdocs 1.3.0 ([`6529730`](https://github.com/Mara-Li/mkdocs-ezlinked-plugin/commit/652973032718f9f2f49c837461762d4c1a88fe8e))
+
 ## v0.1.16 (2022-03-23)
 
 
