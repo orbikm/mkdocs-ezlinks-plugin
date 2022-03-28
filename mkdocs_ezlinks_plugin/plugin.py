@@ -3,7 +3,7 @@ from typing import List
 
 import mkdocs
 from mkdocs.utils import warning_filter
-
+from mkdocs.structure import files as fl
 from .file_mapper import FileMapper
 from .replacer import EzLinksReplacer
 from .scanners.md_link_scanner import MdLinkScanner
@@ -42,7 +42,7 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
         self.replacer.compile()
 
     # Build a fast lookup of all files (by file name)
-    def on_files(self, files: List[mkdocs.structure.files.File], config):
+    def on_files(self, files: List[fl.File], config):
         self.file_mapper = FileMapper(
             options=EzLinksOptions(**self.config),
             root=config["docs_dir"],

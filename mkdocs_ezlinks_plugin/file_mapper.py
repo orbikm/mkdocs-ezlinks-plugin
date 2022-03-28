@@ -5,14 +5,14 @@ import mkdocs
 from pathlib import Path
 
 from .types import EzLinksOptions
-
+from mkdocs.structure import pages as mkpage
 
 class FileMapper:
     def __init__(
         self,
         options: EzLinksOptions,
         root: str,
-        files: List[mkdocs.structure.pages.Page],
+        files: List[mkpage.Page],
         logger=None,
     ):
         self.options = options
