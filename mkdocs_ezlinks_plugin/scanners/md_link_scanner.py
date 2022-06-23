@@ -43,11 +43,7 @@ class MdLinkScanner(BaseLinkScanner):
 
     def extract(self, match: Match) -> Link:
         groups = match.groupdict()
-
         image = groups.get("md_is_image") or groups.get("md_alt_is_image") or ""
-        if image and not re.search(r'\.(png|jpe?g|gif)', groups.get("md_filename"), re.IGNORECASE):
-            raise BrokenLink(f'{groups.get("md_filename")} Seems to be an image, but no image extension found!')
-
         return Link(
             image=image,
             text=groups.get("md_text") or "",

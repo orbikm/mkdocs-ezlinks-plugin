@@ -40,8 +40,6 @@ class WikiLinkScanner(BaseLinkScanner):
             raise BrokenLink(
                 f"Could not extract required field `wiki_link` from {match.group(0)}"
             )
-        if image and not re.search(r'(\.png|jpe?g|gif|webm|svg|bmp|webp|tiff)', link):
-            raise BrokenLink(f'Seems to be an image, but no image extension found!')
 
         if anchor:
             anchor = self._slugify(anchor)
