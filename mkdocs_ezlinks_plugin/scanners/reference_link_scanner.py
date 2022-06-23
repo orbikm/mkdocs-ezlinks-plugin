@@ -4,7 +4,7 @@ from ..types import Link
 
 
 class ReferenceLinkScanner(BaseLinkScanner):
-    def pattern(self) -> Pattern:
+    def pattern(self) -> str:
         # +--------------------------------------+
         # | Reference Link Regex Capture Groups  |
         # +--------------------------------------+
@@ -31,7 +31,7 @@ class ReferenceLinkScanner(BaseLinkScanner):
             match.groupdict().get("ref_text") and match.groupdict().get("ref_target")
         )
 
-    def extract(self, match: Match) -> bool:
+    def extract(self, match: Match) -> Link:
         groups = match.groupdict()
         return Link(
             image=False,

@@ -1,11 +1,12 @@
-from typing import Pattern, Match
+import re
+from typing import Match
 
 from .base_link_scanner import BaseLinkScanner
-from ..types import EzLinksOptions, Link
+from ..types import Link, BrokenLink
 
 
 class MdLinkScanner(BaseLinkScanner):
-    def pattern(self) -> Pattern:
+    def pattern(self) -> str:
         # +------------------------------+
         # | MD Link Regex Capture Groups |
         # +-------------------------------------------------------------------------------------+
@@ -42,8 +43,13 @@ class MdLinkScanner(BaseLinkScanner):
 
     def extract(self, match: Match) -> Link:
         groups = match.groupdict()
+
+        image = groups.get("md_is_image") or groups.get("md_alt_is_image") or ""
+        if image and not re.search(r'\.(png|jpe?g|gif)', groups.get("md_filename"), re.IGNORECASE):
+            raise BrokenLink(f'{groups.get("md_filename")} Seems to be an image, but no image extension found!')
+
         return Link(
-            image=groups.get("md_is_image") or groups.get("md_alt_is_image") or "",
+            image=image,
             text=groups.get("md_text") or "",
             target=groups.get("md_filename") or "",
             title=groups.get("md_title") or "",
