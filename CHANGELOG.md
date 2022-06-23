@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.19 (2022-06-23)
+### Fix
+* Image created with wikilinks that don't end with image format ([`edd395a`](https://github.com/Mara-Li/mkdocs-ezlinked-plugin/commit/edd395afe84e2c56f275fe3543cc2f63ed3ea4f8))
+
 ## v0.1.18 (2022-03-28)
 
 
