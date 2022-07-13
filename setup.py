@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 description = "A mkdocs plugin that makes linking to other documents easy."
 long_description = description
 
-version="0.2.1"
+version="0.3.0"
 
 with open("README.md", "r") as f:
     long_description = f.read()
