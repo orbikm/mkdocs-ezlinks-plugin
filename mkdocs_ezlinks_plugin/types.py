@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 
 class BrokenLink(Exception):
+    #Ignore these
     pass
 
 
