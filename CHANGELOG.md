@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.1 (2022-07-13)
+### Fix
+* Remove uncessary logging message ([`9c702a8`](https://github.com/Mara-Li/mkdocs-ezlinked-plugin/commit/9c702a849ef577ee8dad766b04355ae95e41310c))
+
 ## v0.2.0 (2022-06-23)
 
 
