@@ -53,6 +53,8 @@ class FileMapper:
         # Detect if it's an absolute link, then just return it directly
         if abs_to.startswith("/"):
             return os.path.join(self.root, abs_to[1:])
+        elif abs_to.startswith("."):
+            return os.path.join(os.path.dirname(from_file), abs_to)
         else:
             # Check if it is a direct link first
             from_dir = os.path.dirname(from_file)
@@ -66,6 +68,7 @@ class FileMapper:
             if os.path.basename(file_name) in self.file_cache:
                 abs_to = self.file_cache[file_name][0]
             else:
+
                 search_for = list(file_path.split("/"))
                 search_for.reverse()
                 search_for = "/".join(search_for)
