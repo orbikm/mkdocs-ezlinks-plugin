@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.1 (2022-10-01)
+### Fix
+* Relative file not found ([`11ff9b2`](https://github.com/Lisandra-dev/mkdocs-ezlinked-plugin/commit/11ff9b2468004876ca20cbec688843c0d0d8e1b5))
+
 ## v0.3.0 (2022-07-13)
 
 
