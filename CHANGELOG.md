@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.3 (2022-12-08)
+### Fix
+* Update for mkdocs 1.4.0 ([`dc1741f`](https://github.com/Lisandra-dev/mkdocs-ezlinked-plugin/commit/dc1741fb1601a181edfe072bb3feadbefe09558a))
+
 ## v0.3.2 (2022-10-01)
 ### Fix
 * Relative file not found ([`1a03bfa`](https://github.com/Lisandra-dev/mkdocs-ezlinked-plugin/commit/1a03bfa3db016eb18acc4c710a2bf0682ae1a01e))
