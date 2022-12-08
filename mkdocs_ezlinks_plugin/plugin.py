@@ -55,4 +55,4 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
         self.init(config)
 
     def on_page_markdown(self, markdown, page, config, **kwargs):
-        return self.replacer.replace(page.file.src_path, markdown)
+        return self.replacer.replace(page.file.src_uri, markdown)

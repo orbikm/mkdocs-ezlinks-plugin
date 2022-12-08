@@ -1,11 +1,10 @@
-import os
 import re
 from typing import Match
 from urllib.parse import quote
 from .types import EzLinksOptions, BrokenLink
 from .scanners.base_link_scanner import BaseLinkScanner
 from .file_mapper import FileMapper
-
+import posixpath
 
 class EzLinksReplacer:
     def __init__(
@@ -55,7 +54,7 @@ class EzLinksReplacer:
         )
 
     def _do_replace(self, match: Match) -> str:
-        abs_from = os.path.dirname(os.path.join(self.root, self.path))
+        abs_from = posixpath.dirname(posixpath.join(self.root, self.path))
         try:
             for scanner in self.scanners:
                 if scanner.match(match):
@@ -69,7 +68,7 @@ class EzLinksReplacer:
                     # Handle case of local page anchor
                     if not link.target:
                         if link.anchor:
-                            link.target = os.path.join(self.root, self.path)
+                            link.target = posixpath.join(self.root, self.path)
                         else:
                             raise BrokenLink(f"No target for link '{match.group(0)}'")
                     else:
@@ -84,7 +83,7 @@ class EzLinksReplacer:
                         if not search_result:
                             raise BrokenLink(f"'{link.target}' not found.")
                         link.target = search_result
-                    link.target = quote(os.path.relpath(link.target, abs_from))
+                    link.target = quote(posixpath.relpath(link.target, abs_from))
                     return link.render()
         except BrokenLink as ex:
             # Log these out as Debug messages, as the regular mkdocs
