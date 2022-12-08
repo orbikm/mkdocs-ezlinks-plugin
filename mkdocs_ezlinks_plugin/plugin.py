@@ -3,7 +3,7 @@ from typing import List
 
 import mkdocs
 from mkdocs.utils import warning_filter
-from mkdocs.structure import files as fl
+
 from .file_mapper import FileMapper
 from .replacer import EzLinksReplacer
 from .scanners.md_link_scanner import MdLinkScanner
@@ -17,37 +17,37 @@ LOGGER.addFilter(warning_filter)
 
 class EzLinksPlugin(mkdocs.plugins.BasePlugin):
     config_scheme = (
-        ("wikilinks", mkdocs.config.config_options.Type(bool, default=True)),
-        ("warn_ambiguities", mkdocs.config.config_options.Type(bool, default=False)),
-        ("reference_links", mkdocs.config.config_options.Type(bool, default=False)),
+        ('wikilinks',  mkdocs.config.config_options.Type(bool, default=True)),
+        ('warn_ambiguities', mkdocs.config.config_options.Type(bool, default=False)),
+        ('reference_links', mkdocs.config.config_options.Type(bool, default=False))
     )
 
     def init(self, config):
         self.replacer = EzLinksReplacer(
-            root=config["docs_dir"],
+            root=config['docs_dir'],
             file_map=self.file_mapper,
-            use_directory_urls=config["use_directory_urls"],
+            use_directory_urls=config['use_directory_urls'],
             options=EzLinksOptions(**self.config),
-            logger=LOGGER,
+            logger=LOGGER
         )
 
         self.replacer.add_scanner(MdLinkScanner())
-        if self.config["wikilinks"]:
+        if self.config['wikilinks']:
             self.replacer.add_scanner(WikiLinkScanner())
-
-        if self.config["reference_links"]:
+        
+        if self.config['reference_links']:
             self.replacer.add_scanner(ReferenceLinkScanner())
 
         # Compile the regex once
         self.replacer.compile()
 
     # Build a fast lookup of all files (by file name)
-    def on_files(self, files: List[fl.File], config):
+    def on_files(self, files: List[mkdocs.structure.files.File], config):
         self.file_mapper = FileMapper(
             options=EzLinksOptions(**self.config),
-            root=config["docs_dir"],
+            root=config['docs_dir'],
             files=files,
-            logger=LOGGER,
+            logger=LOGGER
         )
 
         # After the file map has been built, initialize what we can that will
