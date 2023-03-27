@@ -30,7 +30,7 @@ class MdLinkScanner(BaseLinkScanner):
             )
             \(
                 (?P<md_target>
-                    (?!(?P<md_protocol>[a-z][a-z0-9+\-.]*:\/\/))
+                    (?!(?P<md_protocol>(?:([a-z][a-z0-9+\-.]*:\/\/)|(mailto:))))
                     (?P<md_filename>\/?[^\#\ \)]*)?
                     (?:\#(?P<md_anchor>[^\)\"]*)?)?
                     (?:\ \"(?P<md_title>[^\"\)]*)\")?
