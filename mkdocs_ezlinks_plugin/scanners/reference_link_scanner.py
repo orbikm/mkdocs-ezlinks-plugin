@@ -4,7 +4,7 @@ from ..types import Link
 
 
 class ReferenceLinkScanner(BaseLinkScanner):
-    def pattern(self) -> Pattern:
+    def pattern(self) -> str:
         # +--------------------------------------+
         # | Reference Link Regex Capture Groups  |
         # +--------------------------------------+
@@ -14,7 +14,7 @@ class ReferenceLinkScanner(BaseLinkScanner):
         # |   url: Required                      |
         # | title: Optional, up to one newline   |
         # +--------------------------------------+
-        return r'''
+        return r"""
         (?:
         \[
             (?P<ref_text>[^\]]+)
@@ -24,20 +24,19 @@ class ReferenceLinkScanner(BaseLinkScanner):
         (?P<ref_target>\/?[^\#\ \)(\r\n|\r|\n)]*)?
         (?:\#(?P<ref_anchor> [^\(\ ]*)?)?
         (?:(\r\n|\r|\n)?)?(?P<ref_title>\ ?\"[^(\r\n|\r|\n)\"]*\")?
-        '''
+        """
 
     def match(self, match: Match) -> bool:
         return bool(
-            match.groupdict().get('ref_text') and
-            match.groupdict().get('ref_target')
+            match.groupdict().get("ref_text") and match.groupdict().get("ref_target")
         )
 
-    def extract(self, match: Match) -> bool:
+    def extract(self, match: Match) -> Link:
         groups = match.groupdict()
         return Link(
             image=False,
-            text=groups.get('ref_text') or '',
-            target=groups.get('ref_target') or '',
-            title=groups.get('ref_title') or '',
-            anchor=groups.get('ref_anchor') or ''
+            text=groups.get("ref_text") or "",
+            target=groups.get("ref_target") or "",
+            title=groups.get("ref_title") or "",
+            anchor=groups.get("ref_anchor") or "",
         )

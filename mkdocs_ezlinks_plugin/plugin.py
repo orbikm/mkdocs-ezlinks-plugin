@@ -2,7 +2,6 @@ import logging
 from typing import List
 
 import mkdocs
-from mkdocs.utils import warning_filter
 
 from .file_mapper import FileMapper
 from .replacer import EzLinksReplacer
@@ -12,7 +11,6 @@ from .scanners.reference_link_scanner import ReferenceLinkScanner
 from .types import EzLinksOptions
 
 LOGGER = logging.getLogger(f"mkdocs.plugins.{__name__}")
-LOGGER.addFilter(warning_filter)
 
 
 class EzLinksPlugin(mkdocs.plugins.BasePlugin):
@@ -55,4 +53,4 @@ class EzLinksPlugin(mkdocs.plugins.BasePlugin):
         self.init(config)
 
     def on_page_markdown(self, markdown, page, config, **kwargs):
-        return self.replacer.replace(page.file.src_path, markdown)
+        return self.replacer.replace(page.file.src_uri, markdown)

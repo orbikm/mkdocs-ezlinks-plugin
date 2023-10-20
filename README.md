@@ -1,3 +1,7 @@
+*Fork*  
+To install this fork :   
+`pip install mkdocs-ezlinked-plugin`  
+
 # mkdocs-ezlinks-plugin
 
 ![](logo.png)

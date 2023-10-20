@@ -1,4 +1,4 @@
-import os
+import posixpath
 from typing import List
 
 import pygtrie
@@ -24,17 +24,17 @@ class FileMapper:
         self.files = [file for file in files if root in file.abs_src_path]
 
         for file in self.files:
-            self._store_file(file.src_path)
+            self._store_file(file.src_uri)
 
     def _store_file(self, file_path):
         # Treat paths as posix format, regardless of OS
         file_path = file_path.replace('\\', '/')
         # Store the pathwise reversed representation of the file with and
         # without file extension.
-        search_exprs = [file_path, os.path.splitext(file_path)[0]]
+        search_exprs = [file_path, posixpath.splitext(file_path)[0]]
         for search_expr in search_exprs:
             # Store in fast file cache
-            file_name = os.path.basename(search_expr)
+            file_name = posixpath.basename(search_expr)
             if file_name not in self.file_cache:
                 self.file_cache[file_name] = [file_path]
             else:
@@ -52,18 +52,18 @@ class FileMapper:
         abs_to = file_path
         # Detect if it's an absolute link, then just return it directly
         if abs_to.startswith('/'):
-            return os.path.join(self.root, abs_to[1:])
+            return posixpath.join(self.root, abs_to[1:])
         else:
             # Check if it is a direct link first
-            from_dir = os.path.dirname(from_file)
-            if os.path.exists(os.path.join(self.root, from_dir, file_path)):
-                return os.path.join(self.root, from_dir, file_path)
+            from_dir = posixpath.dirname(from_file)
+            if posixpath.exists(posixpath.join(self.root, from_dir, file_path)):
+                return posixpath.join(self.root, from_dir, file_path)
 
             # It's an EzLink that must be searched
-            file_name = os.path.basename(file_path)
+            file_name = posixpath.basename(file_path)
 
             # Check fast file cache first
-            if os.path.basename(file_name) in self.file_cache:
+            if posixpath.basename(file_name) in self.file_cache:
                 abs_to = self.file_cache[file_name][0]
             else:
                 search_for = list(file_path.split('/'))
@@ -82,7 +82,7 @@ class FileMapper:
                     # an iterative ascent of the link file's path. In this way, we should
                     # be able to get the result closest to the file doing the linking
                     if has_ambiguity:
-                        file_path = os.path.dirname(from_file)
+                        file_path = posixpath.dirname(from_file)
                         components = file_path.split('/')
                         components.reverse()
                         for path_component in components:
@@ -105,4 +105,4 @@ class FileMapper:
                                f"File: '{from_file}'\n"
                                f"Link: '{search_for}'\n"
                                "Ambiguities:\n" + ambiguities)
-        return os.path.join(self.root, abs_to)
+        return posixpath.join(self.root, abs_to)

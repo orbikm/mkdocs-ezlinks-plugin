@@ -1,3 +1,7 @@
 Welcome, world!
 
-![[Puppy]]
+![[Puppy]]  
+
+![](Puppy.md)
+
+
